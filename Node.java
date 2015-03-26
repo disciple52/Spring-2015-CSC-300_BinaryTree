@@ -1,14 +1,20 @@
-public class Node 
+public class Node extends BinaryTree
 {
 	private int payload;
 	private Node leftNode;
 	private Node rightNode;
+	private boolean visited;
+	private Node parentNode;
+	
 	
 	public Node(int payload)
 	{
 		this.payload = payload;
 		this.leftNode = null;
 		this.rightNode = null;
+		this.visited = false;
+		this.parentNode = null;
+		
 	}
 
 	public void addNode(Node n)
@@ -18,6 +24,8 @@ public class Node
 			if(this.leftNode == null)
 			{
 				this.leftNode = n;
+				n.parentNode = this;
+				
 			}
 			else
 			{
@@ -29,12 +37,19 @@ public class Node
 			if(this.rightNode == null)
 			{
 				this.rightNode = n;
+				n.parentNode = this;
+				
 			}
 			else
 			{
 				this.rightNode.addNode(n);
 			}
 		}
+	}
+	
+	public void trueVisited(Node n)
+	{
+		this.visited = true;
 	}
 	
 	public Node getLeftNode() {
@@ -56,6 +71,24 @@ public class Node
 	public int getPayload() {
 		return payload;
 	}
+
+	public boolean getVisited() {
+		return visited;
+	}
+
+	public void setVisited(boolean visited) {
+		this.visited = visited;
+	}
+
+	public Node getParentNode() {
+		return parentNode;
+	}
+
+	public void setParentNode(Node parentNode) {
+		this.parentNode = parentNode;
+	}	
+	
+	
 	
 	
 }
