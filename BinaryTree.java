@@ -1,5 +1,5 @@
 public class BinaryTree 
-{
+{	
 	private Node root;
 	private Node currNode;
 	public int count;
@@ -10,26 +10,18 @@ public class BinaryTree
 		this.currNode = null;
 		this.count = 0;
 	}
-	
-	public void count()
-	{
-		System.out.println("Count is: " + count);
-	}
 	public void displayInOrder() 
 	{
-		//System.out.println("**** In Order ****");
-		
 		if(this.root == null)
 		{
 			System.out.println("Empty Tree");
 		}
 		else if(count > 0)
 		{			
-			//if we haven't already displayed this payload
+			//if we haven't already displayed currNode payload
 			if(currNode.getVisited() == false)
 			{
 				System.out.print(currNode.getPayload() + ", ");
-				//this.root.trueVisited(currNode);
 				currNode.setVisited(true);
 				count--;
 			}		
@@ -39,25 +31,25 @@ public class BinaryTree
 			{							
 				currNode = currNode.getLeftNode();					
 				displayInOrder();
+				
 			}		
 			
 			if(currNode.getRightNode() != null)
 			{
-				//System.out.println("here");				
+				//System.out.println("blah");				
 				currNode = currNode.getRightNode();
 				displayInOrder();
+				
 			}			
 			
 			if(currNode.getLeftNode() == null && currNode.getRightNode() == null) 
 			{		
-				
-				//System.out.print("down here");
-				//System.out.print(currNode.getLeftNode().getPayload() + " -> ");
 				if(currNode.getParentNode().getLeftNode() != null)
 				{
 					currNode.getParentNode().setLeftNode(null);
 					currNode = root;
 					displayInOrder();
+					
 				}
 				else
 				{
@@ -65,19 +57,52 @@ public class BinaryTree
 					currNode = root;
 					displayInOrder();
 				}
-			}
-			
-			
+			}		
 		}
 	}
 	
 	public void displayPostOrder()
 	{
-		System.out.println("**** Post Order ****");
 		if(this.root == null)
 		{
 			System.out.println("Empty Tree");
 		}		
+		else if(count > 1)
+		{
+			if(currNode.getLeftNode() != null)
+			{							
+				currNode = currNode.getLeftNode();					
+				displayPostOrder();				
+			}
+			if(currNode.getVisited() == false)
+			{
+				System.out.print(currNode.getPayload() + ", ");
+				currNode.setVisited(true);
+				count--;			
+			}
+			else 
+			{
+				if(currNode.getRightNode() == null)
+				{
+					if(currNode.getParentNode().getLeftNode() != null)
+					{
+						currNode.getParentNode().setLeftNode(null);
+						currNode = root;
+					}
+					else
+					{
+						currNode.getParentNode().setRightNode(null);
+						currNode = root;
+					}
+					displayPostOrder();
+				}
+				else
+				{
+					currNode = currNode.getRightNode();
+					displayPostOrder();
+				}
+			}			
+		}
 	}
 	
 	public void add(int value)
