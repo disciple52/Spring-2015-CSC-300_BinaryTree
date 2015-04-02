@@ -203,12 +203,77 @@ public class BinaryTree
 		else
 		{
 			//get the depth of the left
-			int currMaxLeftDepth = this.leftTree == null?0:this.leftTree.getMaxDepth(); //inline if statement see 54:15 in video csc 300 3/31/15 //boolean-expr?true-val:false-val
-			int currMaxRightDepth = this.rightTree == null?0:this.rightTree.getMaxDepth();
+			int currMaxLeftDepth = this.leftTree == null?this.depth:this.leftTree.getMaxDepth(); //inline if statement see 54:15 in video csc 300 3/31/15 //boolean-expr?true-val:false-val
+			int currMaxRightDepth = this.rightTree == null?this.depth:this.rightTree.getMaxDepth();
 			System.out.println("Max Left = " + currMaxLeftDepth);
 			System.out.println("Max Right = " + currMaxRightDepth);
 			return Math.abs(currMaxLeftDepth - currMaxRightDepth) <= 1;
 		}	
+	}
+	
+	public BinaryTree rotateRight(BinaryTree parent)
+	{
+		System.out.println("rotateRight");
+		BinaryTree child = parent.leftTree;
+		child.rightTree = parent;
+		parent.leftTree = null;
+		this.leftTree = child;
+		return child;
+	}
+	
+	public BinaryTree rotateLeft(BinaryTree parent)
+	{
+		System.out.println("rotateLeft");
+		BinaryTree child = parent.rightTree;
+		child.leftTree = parent;
+		parent.rightTree = null;
+		this.rightTree = child;
+		return child;
+	}
+	
+	public void reBalance()
+	{
+		System.out.println("unbalanced");
+		if (this.leftTree.getMaxDepth() == this.rightTree.getMaxDepth() - 1 || this.rightTree == null) //never enters here (problematic)
+		{
+			System.out.println("still kickin");
+			if(this.leftTree.getMaxDepth() > 2)
+			{
+				this.leftTree.reBalance();
+			}
+			else
+			{
+				if(this.rightTree == null)
+				{
+					rotateLeft(this);
+				}
+				else
+				{
+					rotateLeft(this);
+					rotateRight(rotateLeft(this));
+				}
+			}
+		}
+		else
+		{
+			System.out.println("other kick");
+			if(this.rightTree.getMaxDepth() == this.getMaxDepth() - 1 || this.leftTree == null) 
+			{
+				this.rightTree.reBalance();
+			}
+			else 
+			{
+				if(this.leftTree == null)
+				{
+					rotateRight(this);
+				}
+				else
+				{
+					rotateRight(this);
+					rotateLeft(rotateRight(this));
+				}
+			}
+		}
 	}
 	
 	public void add(int value)
@@ -237,6 +302,11 @@ public class BinaryTree
 				this.rightTree.add(value);
 			}
 		}
+		if(!this.isBalanced())
+		{
+			this.reBalance();
+		}
+		System.out.println("isBalanced");
 		/*
 		Node theNode = new Node(value);
 		if(this.root == null)
