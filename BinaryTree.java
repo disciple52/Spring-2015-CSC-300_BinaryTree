@@ -6,20 +6,41 @@ public class BinaryTree
 	private int payload;
 	private BinaryTree leftTree;
 	private BinaryTree rightTree;
+	private BinaryTree parent;
 	private int depth;
 	
 	public BinaryTree()
 	{
-		this(0); //this is how we call our own constructor
+		this(0); //this is how we call our own local constructor		
 	}
 	
-	private BinaryTree(int depth)
+	private BinaryTree(int depth) //setting up the intial variables
 	{
 		//this.root = null;
 		this.isEmpty = true;
 		this.leftTree = null;
 		this.rightTree = null;
 		this.depth = depth;
+		this.parent = null; //every ROOT node will not have a parent so we need to set it's parent to null
+	}
+	private void  changeDepth(BinaryTree pivot)
+	{
+		if(pivot.rightTree == null)
+		{
+			pivot.depth = pivot.parent.depth+1;
+		}
+		else
+		{
+			pivot.depth = pivot.depth-1;
+		}
+		if(pivot.leftTree != null)
+		{
+			pivot.leftTree.changeDepth(pivot.leftTree);
+		}
+		if(pivot.rightTree != null)
+		{
+			pivot.rightTree.changeDepth(pivot.rightTree);
+		}
 	}
 	
 	public boolean search(int value)
@@ -81,7 +102,7 @@ public class BinaryTree
 	
 	public void visitPreOrder()
 	{
-		System.out.println(this.payload);
+		System.out.println(this.payload + " : " + this.depth);
 		if(this.leftTree != null)
 		{
 			this.leftTree.visitPreOrder();
@@ -102,7 +123,7 @@ public class BinaryTree
 		{
 			this.rightTree.visitPostOrder();
 		}
-		System.out.println(this.payload);
+		System.out.println(this.payload + " : " + this.depth);
 	}
 	
 	public void displayInOrder()
@@ -203,79 +224,115 @@ public class BinaryTree
 		else
 		{
 			//get the depth of the left
-			int currMaxLeftDepth = this.leftTree == null?this.depth:this.leftTree.getMaxDepth(); //inline if statement see 54:15 in video csc 300 3/31/15 //boolean-expr?true-val:false-val
-			int currMaxRightDepth = this.rightTree == null?this.depth:this.rightTree.getMaxDepth();
+			int currMaxLeftDepth = this.leftTree == null?0:this.leftTree.getMaxDepth(); //inline if statement see 54:15 in video csc 300 3/31/15 //boolean-expr?true-val:false-val
+			int currMaxRightDepth = this.rightTree == null?0:this.rightTree.getMaxDepth();
 			System.out.println("Max Left = " + currMaxLeftDepth);
 			System.out.println("Max Right = " + currMaxRightDepth);
 			return Math.abs(currMaxLeftDepth - currMaxRightDepth) <= 1;
 		}	
 	}
 	
-	public BinaryTree rotateRight(BinaryTree parent)
+	private void rotateRight(BinaryTree pivot)
 	{
-		System.out.println("rotateRight");
-		BinaryTree child = parent.leftTree;
-		child.rightTree = parent;
-		parent.leftTree = null;
-		this.leftTree = child;
-		return child;
-	}
-	
-	public BinaryTree rotateLeft(BinaryTree parent)
-	{
-		System.out.println("rotateLeft");
-		BinaryTree child = parent.rightTree;
-		child.leftTree = parent;
-		parent.rightTree = null;
-		this.rightTree = child;
-		return child;
-	}
-	
-	public void reBalance()
-	{
-		System.out.println("unbalanced");
-		if (this.leftTree.getMaxDepth() == this.rightTree.getMaxDepth() - 1 || this.rightTree == null) //never enters here (problematic)
+		//System.out.println("rotateRight");
+		BinaryTree pivRT = null;
+		BinaryTree pivP = null;
+		BinaryTree pivGP = null;
+		
+		if(pivot.rightTree != null)
 		{
-			System.out.println("still kickin");
-			if(this.leftTree.getMaxDepth() > 2)
+			pivRT = pivot.rightTree;
+			pivot.rightTree = null;
+		}
+		pivP = pivot.parent;
+		pivGP = (pivP == null?null:pivP.parent);
+		//conditionally remove pivP from his parent if he had a parent
+		if(pivGP != null)
+		{
+			if(pivGP.leftTree == pivP)
 			{
-				this.leftTree.reBalance();
+				pivGP.leftTree = pivot;
 			}
 			else
 			{
-				if(this.rightTree == null)
-				{
-					rotateLeft(this);
-				}
-				else
-				{
-					rotateLeft(this);
-					rotateRight(rotateLeft(this));
-				}
+				pivGP.rightTree = pivot;
 			}
 		}
 		else
 		{
-			System.out.println("other kick");
-			if(this.rightTree.getMaxDepth() == this.getMaxDepth() - 1 || this.leftTree == null) 
-			{
-				this.rightTree.reBalance();
-			}
-			else 
-			{
-				if(this.leftTree == null)
-				{
-					rotateRight(this);
-				}
-				else
-				{
-					rotateRight(this);
-					rotateLeft(rotateRight(this));
-				}
-			}
+			//pivot is the new root tree of the entire tree
+			pivot.parent = null;
 		}
+		//always remove pivot from his parent
+		if(pivP == null)
+		{
+			System.err.println("I have no parent...should I be calling rotate right?");
+			return;
+		}
+		else
+		{
+			//should always get into this else
+			//always replace pivP's left tree with whatever pivRT points to
+			pivP.leftTree = pivRT;
+		}
+		//finally connect pivP as the right child of pivot and notify pivP who his new parent is
+		pivot.rightTree = pivP;
+		pivP.parent = pivot;
 	}
 	
+	private void rotateLeft(BinaryTree pivot)
+	{
+		//System.out.println("rotateLeft");
+		BinaryTree pivLT = null;
+		BinaryTree pivP = null;
+		BinaryTree pivGP = null;
+
+		if(pivot.leftTree != null)
+		{
+			pivLT = pivot.leftTree;
+			pivot.leftTree = null;
+		}
+		pivP = pivot.parent;
+		pivGP = (pivP == null?null:pivP.parent);
+		//conditionally remove pivP from his parent if he had a parent
+		if(pivGP != null)
+		{
+			if(pivGP.leftTree == pivP)
+			{
+				pivGP.leftTree = pivot;
+			}
+			else
+			{
+				pivGP.rightTree = pivot;
+			}
+		}
+		else
+		{
+			//pivot is the new root tree of the entire tree
+			pivot.parent = null;
+		}
+		//always remove pivot from his parent
+		if(pivP == null)
+		{
+			System.err.println("I have no parent...should I be calling rotate left?");
+			return;
+		}
+		else
+		{
+			//should always get into this else
+			//always replace pivP's right tree with whatever pivLT points to
+			pivP.rightTree = pivLT;
+		}
+		//finally connect pivP as the left child of pivot and notify pivP who his new parent is
+		pivot.leftTree = pivP;
+		pivP.parent = pivot;		
+	}
+	
+	public void reBalance()
+	{
+
+	}
+
 	public void add(int value)
 	{
 		if(this.isEmpty)
@@ -290,6 +347,7 @@ public class BinaryTree
 				if(this.leftTree == null)
 				{
 					this.leftTree = new BinaryTree(this.depth+1);	
+					this.leftTree.parent = this; //passing in themselves as the parent
 				}
 				this.leftTree.add(value);
 			}
@@ -298,15 +356,26 @@ public class BinaryTree
 				if(this.rightTree == null)
 				{
 					this.rightTree = new BinaryTree(this.depth+1);
+					this.rightTree.parent = this;
 				}
 				this.rightTree.add(value);
 			}
 		}
-		if(!this.isBalanced())
+		
+		if(this.depth == 2)
+		{
+			this.parent.parent.displayInOrder();
+			System.out.println("rotating right");
+			rotateRight(this.parent);
+			this.parent.displayInOrder();
+			changeDepth(this.parent);
+			this.parent.displayInOrder();
+		}
+		/*if(!this.isBalanced())
 		{
 			this.reBalance();
 		}
-		System.out.println("isBalanced");
+		
 		/*
 		Node theNode = new Node(value);
 		if(this.root == null)

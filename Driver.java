@@ -11,17 +11,16 @@ public class Driver
 		}
 		System.out.print(bt.isBalanced());
 		*/
-		 BinaryTree bt = new BinaryTree();
+		BinaryTree bt = new BinaryTree();
 		bt.add(5);
-		System.out.println("------after 5");
 		bt.add(4);
-		System.out.println("------after 4");
-		bt.add(2);
-		System.out.println("------after 2");
 		bt.add(1);
-		System.out.println("------after 1");
+		/*
+		bt.add(1);
 		bt.add(0);
-		System.out.println("------after 0");
+		*/
+		//bt.displayPreOrder();
+		
 		//System.out.println(bt.search(11));
 		
 		/*
