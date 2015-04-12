@@ -12,9 +12,15 @@ public class Driver
 		System.out.print(bt.isBalanced());
 		*/
 		BinaryTree bt = new BinaryTree();
+		bt.add(6);
 		bt.add(5);
-		bt.add(4);
-		bt.add(1);
+		bt.add(7);
+		bt.add(8);
+		bt.add(9);
+		bt.add(10);
+		bt.displayInOrder();
+		System.out.println(bt.isBalanced());
+		//bt.displayInOrder();
 		/*
 		bt.add(1);
 		bt.add(0);
@@ -31,5 +37,6 @@ public class Driver
 		System.out.println("postOrder");
 		bt.displayPostOrder();
 		*/
+		
 	}
 }
